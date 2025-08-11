@@ -1,22 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-interface Post {
-  userId: number;
-  id: number;
-  title: string;
-  body: string;
-}
-
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://jsonplaceholder.typicode.com",
+    baseUrl: "https://picsum.photos/",
   }),
   endpoints: (builder) => ({
-    getPosts: builder.query<Post[], void>({
-      query: () => `/posts`,
+    getImgs: builder.query({
+      query: () => `/800/500?random=1`,
     }),
   }),
 });
 
-export const { useGetPostsQuery, useLazyGetPostsQuery } = api;
+export const { useGetImgsQuery, useLazyGetImgsQuery } = api;

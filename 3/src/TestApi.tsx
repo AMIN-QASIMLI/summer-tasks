@@ -1,11 +1,12 @@
 import { Button, Flex, Loader, Text } from "@chakra-ui/react";
-import { useGetPostsQuery, useLazyGetPostsQuery } from "./api";
+import { useGetImgsQuery, useLazyGetImgsQuery } from "./api";
 
 export const TestApi = () => {
-  const [getPosts, { isFetching: isFetchingLazy, data: dataLazy }] =
-    useLazyGetPostsQuery();
-  const { isFetching, data } = useGetPostsQuery();
-
+  const [getImgs, { isFetching: isFetchingLazy, data: dataLazy }] =
+    useLazyGetImgsQuery();
+  const { isFetching, data } = useGetImgsQuery({});
+  console.log("data", data);
+  console.log("dataLazy", dataLazy);
   return (
     <Flex gap="50px" justifyContent="space-between">
       <Flex direction="column" border="1px solid blue">
@@ -17,17 +18,17 @@ export const TestApi = () => {
             {" "}
             <Button
               onClick={() => {
-                getPosts();
+                getImgs({});
               }}
             >
               Get Posts
             </Button>
-            {dataLazy?.map((post) => (
-              <Flex direction="column" border="1px solid red">
-                <Text>{post.id}</Text>
-                <Text>{post.title}</Text>
-                <Text>{post.userId}</Text>
-                <Text>{post.body}</Text>
+            {dataLazy?.map((img, idx) => (
+              <Flex key={idx} direction="column" border="1px solid red">
+                <img
+                  src={typeof img === "string" ? img : img.url}
+                  alt="random"
+                />
               </Flex>
             ))}
           </>
@@ -38,12 +39,9 @@ export const TestApi = () => {
         {isFetching ? (
           <Loader />
         ) : (
-          data?.map((post) => (
-            <Flex direction="column" border="1px solid red">
-              <Text>{post.id}</Text>
-              <Text>{post.title}</Text>
-              <Text>{post.userId}</Text>
-              <Text>{post.body}</Text>
+          data?.map((img, idx) => (
+            <Flex key={idx} direction="column" border="1px solid red">
+              <img src={typeof img === "string" ? img : img.url} alt="random" />
             </Flex>
           ))
         )}
