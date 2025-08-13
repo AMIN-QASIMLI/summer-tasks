@@ -1,0 +1,30 @@
+body.dark-mode {
+  background: #181818;
+  color: #f1f1f1;
+}
+
+body.dark-mode input,
+body.dark-mode button {
+  background: #232323;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+.post-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.post-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+.post-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.post-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
