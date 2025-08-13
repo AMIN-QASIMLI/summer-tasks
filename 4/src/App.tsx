@@ -9,7 +9,11 @@ export const App = () => {
   const emojiRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [choosenuser, setChoosen] = useState<string>("user1");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   const onEmojiClick = (emojiData: EmojiClickData) => {
     if (inputRef) {
       inputRef.current!.value += emojiData.emoji || "";
@@ -25,7 +29,7 @@ export const App = () => {
     }
   };
 
-const handleMassageSend = () => {
+  const handleMassageSend = () => {
     const message = inputRef.current?.value.trim();
     if (message) {
       const newMessage = {
@@ -38,33 +42,32 @@ const handleMassageSend = () => {
         profile: "https://picsum.photos/40/40?random=2",
       };
       if (choosenuser === "user1") {
-      setUser1((prev) => [...prev, newMessage]);
-      setMassages((prev) => [...prev, newMessage]);
-      inputRef.current!.value = "";
-      }
-      else if (choosenuser === "user2") {
+        setUser1((prev) => [...prev, newMessage]);
+        setMassages((prev) => [...prev, newMessage]);
+        inputRef.current!.value = "";
+      } else if (choosenuser === "user2") {
         setUser2((prev) => [...prev, newMessage]);
-      setMassages((prev) => [...prev, newMessage]);
+        setMassages((prev) => [...prev, newMessage]);
         inputRef.current!.value = "";
       } else if (choosenuser === "user3") {
         setUser3((prev) => [...prev, newMessage]);
-      setMassages((prev) => [...prev, newMessage]);
+        setMassages((prev) => [...prev, newMessage]);
         inputRef.current!.value = "";
       } else if (choosenuser === "user4") {
         setUser4((prev) => [...prev, newMessage]);
-      setMassages((prev) => [...prev, newMessage]);
+        setMassages((prev) => [...prev, newMessage]);
         inputRef.current!.value = "";
       } else if (choosenuser === "user5") {
         setUser5((prev) => [...prev, newMessage]);
-      setMassages((prev) => [...prev, newMessage]);
+        setMassages((prev) => [...prev, newMessage]);
         inputRef.current!.value = "";
       } else if (choosenuser === "user6") {
         setUser6((prev) => [...prev, newMessage]);
-      setMassages((prev) => [...prev, newMessage]);
+        setMassages((prev) => [...prev, newMessage]);
         inputRef.current!.value = "";
       }
     }
-}
+  };
 
   const handleUserClick = (userIndex: number) => {
     if (userIndex === 1) {
@@ -88,11 +91,6 @@ const handleMassageSend = () => {
     }
   };
 
-  useEffect(() => {
-    const darkMode = window.localStorage.getItem("darkMode") === "true";
-    document.body.classList.toggle("dark-mode", darkMode);
-  }, []);
-
   const toggleDarkMode = (darkMode: boolean) => {
     document.body.classList.toggle("dark-mode", darkMode);
     window.localStorage.setItem("darkMode", String(darkMode));
@@ -115,7 +113,7 @@ const handleMassageSend = () => {
     { userName: "Ana", profile: "https://picsum.photos/40/40?random=5" },
     { userName: "Boji🧞‍♀️", profile: "https://picsum.photos/40/40?random=6" },
   ];
-  const [user1, setUser1]= useState([
+  const [user1, setUser1] = useState([
     {
       massage: "Salam, necəsən?",
       time: "10:00 AM",
@@ -147,7 +145,8 @@ const handleMassageSend = () => {
       time: "10:02 AM",
       user: 2,
       profile: "https://picsum.photos/40/40?random=2",
-    },]);
+    },
+  ]);
   const [user3, setUser3] = useState([
     {
       massage: "Nomremi haradan tapdın?",
@@ -160,7 +159,8 @@ const handleMassageSend = () => {
       time: "10:02 AM",
       user: 2,
       profile: "https://picsum.photos/40/40?random=2",
-    },]);
+    },
+  ]);
   const [user4, setUser4] = useState([
     {
       massage: "Adimi ne qoymusan?",
@@ -179,7 +179,8 @@ const handleMassageSend = () => {
       time: "10:03 AM",
       user: 1,
       profile: "https://picsum.photos/40/40?random=4",
-    },]);
+    },
+  ]);
   const [user5, setUser5] = useState([
     {
       massage: "Eve gelende 2 dene corek alarsan",
@@ -192,8 +193,9 @@ const handleMassageSend = () => {
       time: "10:02 AM",
       user: 2,
       profile: "https://picsum.photos/40/40?random=2",
-    },]);
-  const [user6, setUser6]= useState([
+    },
+  ]);
+  const [user6, setUser6] = useState([
     {
       massage: "Boji men tukana gedecem nese isteyirsen?",
       time: "10:01 AM",
@@ -205,15 +207,22 @@ const handleMassageSend = () => {
       time: "10:02 AM",
       user: 1,
       profile: "https://picsum.photos/40/40?random=6",
-    },]);
+    },
+  ]);
   type MassageType = {
-  massage: string;
-  time: string;
-  user: number;
-  profile: string;
-};
+    massage: string;
+    time: string;
+    user: number;
+    profile: string;
+  };
 
-const [massages, setMassages] = useState<MassageType[]>(user1)
+  const [massages, setMassages] = useState<MassageType[]>(user1);
+
+  useEffect(() => {
+    const darkMode = window.localStorage.getItem("darkMode") === "true";
+    document.body.classList.toggle("dark-mode", darkMode);
+    scrollToBottom();
+  }, [massages]);
 
   return (
     <Flex w="100%" h="100vh" flexDirection="column">
@@ -306,6 +315,7 @@ const [massages, setMassages] = useState<MassageType[]>(user1)
                 </Flex>
               )
             )}
+            <div ref={messagesEndRef} />
           </Flex>
           <Flex ref={emojiRef} display="none">
             <EmojiPicker onEmojiClick={onEmojiClick} />
