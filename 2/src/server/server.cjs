@@ -6,8 +6,25 @@ app.use(cors());
 app.use(express.json());
 
 // Todos array
-let todos = [];
-let nextId = 1; 
+let todos = [
+  {
+    id: 1,
+    title: "Salam!",
+    name: "Salam!",
+    lifetime: null,
+    userId: 1,
+    completed: false,
+  },
+  {
+    id: 2,
+    title: "Isheleyir?",
+    name: "Isheleyir?",
+    lifetime: null,
+    userId: 1,
+    completed: false,
+  },
+];
+let nextId = 1;
 
 // GET /todos
 app.get("/todos", (req, res) => {
