@@ -15,7 +15,6 @@ export const App = () => {
   const [deleteNote] = useDeleteNoteMutation();
   const [updateNote] = useUpdateNoteMutation();
   const inputref = useRef<HTMLInputElement>(null);
-  const lastNoteId = data.length > 0 ? data[data.length - 1].id : 0;
 
   useEffect(() => {
     const darkMode = window.localStorage.getItem("darkMode") === "true";
@@ -28,12 +27,34 @@ export const App = () => {
   };
 
   const handlleAddNote = async () => {
-    await addNote({
-      id: lastNoteId + 1,
-      title: inputref.current?.value || "",
-      userId: 1,
-      completed: false,
-    }).unwrap();
+    if (!inputref.current?.value) return;
+    try {
+      await addNote({
+        title: inputref.current.value,
+        name: inputref.current.value,
+        lifetime: null,
+        userId: 1,
+        completed: false,
+      }).unwrap();
+      inputref.current.value = "";
+    } catch (err) {
+      console.error("Add note error:", err);
+    }
+  };
+
+  const handleToggleCompleted = async (note: Note) => {
+    try {
+      await updateNote({
+        id: note.id,
+        title: note.title,
+        name: note.title,
+        lifetime: null,
+        userId: note.userId,
+        completed: !note.completed,
+      }).unwrap();
+    } catch (err) {
+      console.error("Toggle completed error:", err);
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -45,20 +66,12 @@ export const App = () => {
   };
 
   type Note = {
-    _id: string;
     id: number;
+    name: string;
+    lifetime: null;
     title: string;
     userId: number;
     completed: boolean;
-  };
-
-  const handleToggleCompleted = async (note: Note) => {
-    await updateNote({
-      id: note._id,
-      title: note.title,
-      userId: note.userId,
-      completed: !note.completed,
-    });
   };
 
   return (
@@ -76,60 +89,50 @@ export const App = () => {
           {isFetching ? (
             <Loader />
           ) : (
-            data.map(
-              (note: {
-                _id: string;
-                id: number;
-                title: string;
-                userId: number;
-                completed: boolean;
-              }) => (
-                <Flex
-                  direction="column"
-                  gap="10px"
-                  p="10px"
-                  border="1px solid lightblue"
-                  key={note._id}
-                >
-                  <Text>ID: {note.id}</Text>
-                  <Text>Note: {note.title}</Text>
-                  <Text>USERID: {note.userId}</Text>
-                  {note.completed && (
-                    <>
-                      <Text color="green">Completed</Text>
-                      <Checkbox.Root
-                        checked={note.completed}
-                        onChange={() => handleToggleCompleted(note)}
-                      >
-                        <Checkbox.HiddenInput />
-                        <Checkbox.Control>
-                          <Checkbox.Indicator />
-                        </Checkbox.Control>
-                        <Checkbox.Label />
-                      </Checkbox.Root>
-                    </>
-                  )}
-                  {!note.completed && (
-                    <>
-                      <Text color="red">Not Completed</Text>
-                      <Checkbox.Root
-                        checked={note.completed}
-                        onChange={() => handleToggleCompleted(note)}
-                      >
-                        <Checkbox.HiddenInput />
-                        <Checkbox.Control>
-                          <Checkbox.Indicator />
-                        </Checkbox.Control>
-                        <Checkbox.Label />
-                      </Checkbox.Root>
-                    </>
-                  )}
-                  <Button onClick={() => handleDelete(note._id)}>
-                    Delete!
-                  </Button>
-                </Flex>
-              )
-            )
+            data.map((note: Note) => (
+              <Flex
+                direction="column"
+                gap="10px"
+                p="10px"
+                border="1px solid lightblue"
+                key={note.id}
+              >
+                <Text>ID: {note.id}</Text>
+                <Text>Note: {note.title}</Text>
+                <Text>USERID: {note.userId}</Text>
+                {note.completed && (
+                  <>
+                    <Text color="green">Completed</Text>
+                    <Checkbox.Root
+                      checked={note.completed}
+                      onChange={() => handleToggleCompleted(note)}
+                    >
+                      <Checkbox.HiddenInput />
+                      <Checkbox.Control>
+                        <Checkbox.Indicator />
+                      </Checkbox.Control>
+                      <Checkbox.Label />
+                    </Checkbox.Root>
+                  </>
+                )}
+                {!note.completed && (
+                  <>
+                    <Text color="red">Not Completed</Text>
+                    <Checkbox.Root
+                      checked={note.completed}
+                      onChange={() => handleToggleCompleted(note)}
+                    >
+                      <Checkbox.HiddenInput />
+                      <Checkbox.Control>
+                        <Checkbox.Indicator />
+                      </Checkbox.Control>
+                      <Checkbox.Label />
+                    </Checkbox.Root>
+                  </>
+                )}
+                <Button onClick={() => handleDelete(note.id)}>Delete!</Button>
+              </Flex>
+            ))
           )}
         </Flex>
       </Flex>

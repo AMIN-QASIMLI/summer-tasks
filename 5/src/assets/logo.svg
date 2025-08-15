@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pick&Go Wordmark + Icon | scalable SVG -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" role="img" aria-labelledby="title desc">
+  <title id="title">Pick&amp;Go logo</title>
+  <desc id="desc">Blue shopping bag icon with black wordmark Pick&amp;Go</desc>
+  <defs>
+    <!-- Colors -->
+    <style>
+      :root { --pg-blue: #1E90FF; --pg-black: #111111; --pg-white: #ffffff; }
+      .icon { fill: var(--pg-blue); }
+      .word { fill: var(--pg-black); font: 700 64px/1.1 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; letter-spacing: 0.5px; }
+    </style>
+    <!-- Icon as reusable symbol -->
+    <symbol id="pg-bag" viewBox="0 0 128 128">
+      <!-- Bag body -->
+      <path d="M28 48c0-6.627 5.373-12 12-12h48c6.627 0 12 5.373 12 12l6.8 52.5c1.02 7.87-5.05 15-12.98 15H34.18c-7.93 0-14-7.13-12.98-15L28 48Z"/>
+      <!-- Handle -->
+      <path d="M64 24c-13.255 0-24 10.745-24 24v6a4 4 0 1 1-8 0v-6c0-17.673 14.327-32 32-32s32 14.327 32 32v6a4 4 0 1 1-8 0v-6c0-13.255-10.745-24-24-24Z"/>
+    </symbol>
+  </defs>
+
+  <!-- Layout: icon + wordmark -->
+  <g transform="translate(16,16)">
+    <g class="icon" transform="translate(0,0) scale(1)">
+      <use href="#pg-bag"/>
+    </g>
+    <text class="word" x="168" y="88">Pick&amp;Go</text>
+  </g>
+
+  <!-- Safe export background (hidden). Toggle to preview on dark: set display to inline -->
+  <rect id="preview-bg" x="0" y="0" width="100%" height="100%" fill="var(--pg-white)" opacity="0"/>
+</svg>

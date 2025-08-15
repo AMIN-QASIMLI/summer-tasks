@@ -1,30 +1,26 @@
-import { Flex, Image, Text, Input, Button, Loader } from "@chakra-ui/react";
+import { Flex, Input, Button, Image, Text, Loader } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useRef } from "react";
-import { FaMoon, FaPlus, FaShoppingCart } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
-import {
-  useGetProductsQuery,
-  useDeleteProductMutation,
-  useAddToCartMutation,
-} from "./api";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
+import { FaMoon, FaPlus, FaShoppingCart } from "react-icons/fa";
 import Logo from "./assets/logo.svg";
 import { useNavigate } from "react-router";
+import { useRef, useEffect } from "react";
+import { useGetInCartsQuery, useRemoveFromCartMutation } from "./api";
 
-export const App = () => {
-  const { data, isFetching } = useGetProductsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-  const [deleteProduct] = useDeleteProductMutation();
-  const [addToCart] = useAddToCartMutation();
+export const InCart = () => {
+  const { data, isFetching } = useGetInCartsQuery();
+  const [deleteProduct] = useRemoveFromCartMutation();
   const sellMenuRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const priceInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-
+  const toggleDarkMode = (darkMode: boolean) => {
+    document.body.classList.toggle("dark-mode", darkMode);
+    window.localStorage.setItem("darkMode", String(darkMode));
+  };
   const handleSellMenuOpener = () => {
     if (sellMenuRef.current!.style.display === "none") {
       sellMenuRef.current!.style.display = "block";
@@ -37,7 +33,7 @@ export const App = () => {
     try {
       await deleteProduct(id).unwrap();
     } catch (err) {
-      console.error("Error while delete:", err);
+      console.error("Silinmə zamanı xəta:", err);
     }
   };
 
@@ -68,39 +64,12 @@ export const App = () => {
     }
   };
 
-  interface Product {
-    title: string;
-    price: number;
-    description?: string;
-    image?: string;
-    isDeletable?: boolean;
-  }
-
-  const handleAddToCartButtonClicked = async (product: Product) => {
-    try {
-      await addToCart({
-        title: product.title,
-        image: product.image,
-        price: product.price,
-        description: product.description,
-      });
-    } catch (err) {
-      console.error("Add product error:", err);
-    }
-  };
-
-  const toggleDarkMode = (darkMode: boolean) => {
-    document.body.classList.toggle("dark-mode", darkMode);
-    window.localStorage.setItem("darkMode", String(darkMode));
-  };
-
   useEffect(() => {
     const darkMode = window.localStorage.getItem("darkMode") === "true";
     document.body.classList.toggle("dark-mode", darkMode);
   }, []);
-
   return (
-    <Flex width={"100%"} height={"100%"}>
+    <Flex>
       <header style={{ width: "100%", position: "fixed", zIndex: "1000" }}>
         <Flex
           p={4}
@@ -172,59 +141,59 @@ export const App = () => {
           </Flex>
         </Flex>
       </header>
-      <Flex
-        wrap={"wrap"}
-        width={"100%"}
-        height={"100%"}
-        p={4}
-        gap={4}
-        mt={"100px"}
-        alignItems={"center"}
-        justifyContent={"center"}
-      >
-        {isFetching ? (
-          <Loader />
-        ) : (
-          data?.map((product) => (
-            <Flex
-              direction={"column"}
-              p={4}
-              gap={4}
-              backgroundColor={"#cccbcb"}
-              borderRadius={"md"}
-              key={product.id}
-              minW={"300px"}
-              maxW={"600px"}
-              minH={"550px"}
-              onClick={() => navigate(`/product/${product.id}`)}
-              transitionDuration={"700ms"}
-              _hover={{
-                padding: 12,
-              }}
-            >
-              <Flex>
-                <Text fontSize={"32px"}>{product.title}</Text>
-              </Flex>
-              <Flex alignItems={"center"} justifyContent={"center"}>
-                <Image src={product.image} />
-              </Flex>
-              <Flex direction={"column"} p={4} gap={4}>
-                <Text fontSize={"24px"}>{product.price}₼</Text>
-                <Text>{product.description}</Text>
-              </Flex>
-              {product.isDeletable == true ? (
-                <Button onClick={() => handleDeleteButton(product.id)}>
+      <main style={{ width: "100%", height: "100%" }}>
+        <Flex
+          wrap={"wrap"}
+          width={"100%"}
+          height={"100%"}
+          p={4}
+          gap={4}
+          mt={"100px"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          {isFetching ? (
+            <Loader />
+          ) : (
+            data?.map((inCart) => (
+              <Flex
+                direction={"column"}
+                p={4}
+                gap={4}
+                backgroundColor={"#cccbcb"}
+                borderRadius={"md"}
+                key={inCart.id}
+                minW={"300px"}
+                maxW={"600px"}
+                minH={"550px"}
+                transitionDuration={"700ms"}
+                onClick={() => navigate(`/product/${inCart.id}`)}
+                _hover={{
+                  padding: 12,
+                }}
+              >
+                <Flex>
+                  <Text fontSize={"32px"}>{inCart.title}</Text>
+                </Flex>
+                <Flex alignItems={"center"} justifyContent={"center"}>
+                  <Image src={inCart.image} />
+                </Flex>
+                <Flex direction={"column"} p={4} gap={4}>
+                  <Text fontSize={"24px"}>{inCart.price}₼</Text>
+                  <Text>{inCart.description}</Text>
+                </Flex>
+
+                <Button onClick={() => handleDeleteButton(inCart.id)}>
                   Delet it!
                 </Button>
-              ) : (
-                <Button onClick={() => handleAddToCartButtonClicked(product)}>
-                  Ad to cart!
-                </Button>
-              )}
-            </Flex>
-          ))
-        )}
-      </Flex>
+              </Flex>
+            ))
+          )}
+        </Flex>
+        <Flex w={"100%"} justifyContent={"center"} alignItems={"center"}>
+          <Button onClick={() => alert("You can'not buy!")}>Buy!</Button>
+        </Flex>
+      </main>
     </Flex>
   );
 };

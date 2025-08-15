@@ -5,14 +5,14 @@ import { FaMoon, FaPlus, FaShoppingCart } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
 import {
   useGetProductsQuery,
-  useDeleteProductMutation,
   useAddToCartMutation,
+  useDeleteProductMutation,
 } from "./api";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
 import Logo from "./assets/logo.svg";
 import { useNavigate } from "react-router";
 
-export const App = () => {
+export const Product = () => {
   const { data, isFetching } = useGetProductsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
@@ -24,6 +24,7 @@ export const App = () => {
   const priceInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const productId = window.location.toString().split("/").pop();
 
   const handleSellMenuOpener = () => {
     if (sellMenuRef.current!.style.display === "none") {
@@ -185,44 +186,29 @@ export const App = () => {
         {isFetching ? (
           <Loader />
         ) : (
-          data?.map((product) => (
-            <Flex
-              direction={"column"}
-              p={4}
-              gap={4}
-              backgroundColor={"#cccbcb"}
-              borderRadius={"md"}
-              key={product.id}
-              minW={"300px"}
-              maxW={"600px"}
-              minH={"550px"}
-              onClick={() => navigate(`/product/${product.id}`)}
-              transitionDuration={"700ms"}
-              _hover={{
-                padding: 12,
-              }}
-            >
-              <Flex>
-                <Text fontSize={"32px"}>{product.title}</Text>
-              </Flex>
-              <Flex alignItems={"center"} justifyContent={"center"}>
+          data
+            ?.filter((product) => product.id == productId)
+            .map((product) => (
+              <Flex borderRadius={"md"} backgroundColor={"#1E90FF"} p={16}>
                 <Image src={product.image} />
+                <Flex direction={"column"} gap={4} p={4}>
+                  <Text fontSize={"32px"}>{product.title}</Text>
+                  <Text fontSize={"24px"}>{product.price}₼</Text>
+                  <Text>{product.description}</Text>
+                  {product.isDeletable == false ? (
+                    <Button onClick={() => handleDeleteButton(product.id)}>
+                      Delete!
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => handleAddToCartButtonClicked(product)}
+                    >
+                      Add to cart!
+                    </Button>
+                  )}
+                </Flex>
               </Flex>
-              <Flex direction={"column"} p={4} gap={4}>
-                <Text fontSize={"24px"}>{product.price}₼</Text>
-                <Text>{product.description}</Text>
-              </Flex>
-              {product.isDeletable == true ? (
-                <Button onClick={() => handleDeleteButton(product.id)}>
-                  Delet it!
-                </Button>
-              ) : (
-                <Button onClick={() => handleAddToCartButtonClicked(product)}>
-                  Ad to cart!
-                </Button>
-              )}
-            </Flex>
-          ))
+            ))
         )}
       </Flex>
     </Flex>
