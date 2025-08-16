@@ -24,7 +24,7 @@ let todos = [
     completed: false,
   },
 ];
-let nextId = 1;
+let nextId = 3;
 
 // GET /todos
 app.get("/todos", (req, res) => {

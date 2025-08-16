@@ -33,7 +33,7 @@ export const InCart = () => {
     try {
       await deleteProduct(id).unwrap();
     } catch (err) {
-      console.error("Silinmə zamanı xəta:", err);
+      console.error("Error while delete:", err);
     }
   };
 
@@ -51,7 +51,7 @@ export const InCart = () => {
         formData.append("price", priceInputRef.current.value);
         formData.append("description", descriptionInputRef.current.value);
         formData.append("image", file);
-        formData.append("isDeletable", "false");
+        formData.append("isDeletable", "true");
 
         try {
           await axios.post("http://localhost:3001/products", formData, {
@@ -191,7 +191,7 @@ export const InCart = () => {
           )}
         </Flex>
         <Flex w={"100%"} justifyContent={"center"} alignItems={"center"}>
-          <Button onClick={() => alert("You can'not buy!")}>Buy!</Button>
+          <Button onClick={() => alert("You can not buy!")}>Buy!</Button>
         </Flex>
       </main>
     </Flex>

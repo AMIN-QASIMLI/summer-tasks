@@ -56,7 +56,7 @@ export const Product = () => {
         formData.append("price", priceInputRef.current.value);
         formData.append("description", descriptionInputRef.current.value);
         formData.append("image", file);
-        formData.append("isDeletable", "false");
+        formData.append("isDeletable", "true");
 
         try {
           await axios.post("http://localhost:3001/products", formData, {
@@ -195,7 +195,7 @@ export const Product = () => {
                   <Text fontSize={"32px"}>{product.title}</Text>
                   <Text fontSize={"24px"}>{product.price}₼</Text>
                   <Text>{product.description}</Text>
-                  {product.isDeletable == false ? (
+                  {product.isDeletable === "true" ? (
                     <Button onClick={() => handleDeleteButton(product.id)}>
                       Delete!
                     </Button>

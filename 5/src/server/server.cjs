@@ -57,7 +57,7 @@ let products = [
     isDeletable: "false",
   },
 ];
-let nextProductId = 1;
+let nextProductId = 5;
 
 // GET /products
 app.get("/products", (req, res) => {
