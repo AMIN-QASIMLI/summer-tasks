@@ -1,22 +1,43 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { axiosBaseQuery } from "./axiosInstance";
+import type { StatLabelProps } from "@chakra-ui/react";
 
-interface Post {
-  userId: number;
+interface Statics {
   id: number;
-  title: string;
-  body: string;
+  name: string;
+  country: string;
+  joined: string;
 }
 
-export const api = createApi({
-  reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://jsonplaceholder.typicode.com",
-  }),
+interface Stats {
+  totalUsers: number;
+  activeUsers: number;
+  revenue: number;
+}
+
+export const staticsApi = createApi({
+  reducerPath: "StaticsApi",
+  baseQuery: axiosBaseQuery(),
+  tagTypes: ["Statics"],
   endpoints: (builder) => ({
-    getPosts: builder.query<Post[], void>({
-      query: () => `/posts`,
+    getStatics: builder.query<Statics[], void>({
+      query: () => ({ url: "/users", method: "get" }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Statics" as const, id })),
+              { type: "Statics", id: "LIST" },
+            ]
+          : [{ type: "Statics", id: "LIST" }],
+    }),
+
+    getStats: builder.query<Stats[], void>({
+      query: () => ({ url: "/stats", method: "get" }),
     }),
   }),
 });
 
-export const { useGetPostsQuery, useLazyGetPostsQuery } = api;
+export const {
+  useGetStaticsQuery,
+  useGetStatsQuery
+} = staticsApi;
