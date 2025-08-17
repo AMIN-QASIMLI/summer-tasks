@@ -5,7 +5,7 @@ import { MdOutlineArrowBackIosNew } from "react-icons/md";
 import { FaMoon, FaPlus, FaShoppingCart } from "react-icons/fa";
 import Logo from "./assets/logo.svg";
 import { useNavigate } from "react-router";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useGetInCartsQuery, useRemoveFromCartMutation } from "./api";
 
 export const InCart = () => {
@@ -16,6 +16,8 @@ export const InCart = () => {
   const imgInputRef = useRef<HTMLInputElement>(null);
   const priceInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchElement, setSearchElement] = useState("");
   const navigate = useNavigate();
   const toggleDarkMode = (darkMode: boolean) => {
     document.body.classList.toggle("dark-mode", darkMode);
@@ -93,6 +95,13 @@ export const InCart = () => {
           <Flex>
             <Image onClick={() => navigate("/")} src={Logo} width={"150px"} />
           </Flex>
+          <Flex
+            gap={1}
+            alignItems={"center"}
+            onChange={() => setSearchElement(searchInputRef.current!.value)}
+          >
+            <Input placeholder="Search in site..." ref={searchInputRef}></Input>
+          </Flex>
           <Flex gap={4}>
             <Flex onClick={handleSellMenuOpener}>
               <FaPlus />
@@ -154,40 +163,88 @@ export const InCart = () => {
         >
           {isFetching ? (
             <Loader />
-          ) : (
-            data?.map((inCart) => (
-              <Flex
-                direction={"column"}
-                p={4}
-                gap={4}
-                backgroundColor={"#cccbcb"}
-                borderRadius={"md"}
-                key={inCart.id}
-                minW={"300px"}
-                maxW={"600px"}
-                minH={"550px"}
-                transitionDuration={"700ms"}
-                onClick={() => navigate(`/product/${inCart.id}`)}
-                _hover={{
-                  padding: 12,
-                }}
-              >
-                <Flex>
-                  <Text fontSize={"32px"}>{inCart.title}</Text>
-                </Flex>
-                <Flex alignItems={"center"} justifyContent={"center"}>
-                  <Image src={inCart.image} />
-                </Flex>
-                <Flex direction={"column"} p={4} gap={4}>
-                  <Text fontSize={"24px"}>{inCart.price}₼</Text>
-                  <Text>{inCart.description}</Text>
-                </Flex>
+          ) : searchElement !== "" ? (
+            data
+              ?.filter((product) =>
+                product.title
+                  .toLowerCase()
+                  .replace(" ", "")
+                  .includes(searchElement)
+              )
+              .map((inCart) => (
+                <Flex
+                  direction={"column"}
+                  p={4}
+                  gap={4}
+                  backgroundColor={"#cccbcb"}
+                  borderRadius={"md"}
+                  key={inCart.id}
+                  minW={"300px"}
+                  maxW={"600px"}
+                  minH={"550px"}
+                  transitionDuration={"700ms"}
+                  onClick={() => navigate(`/product/${inCart.id}`)}
+                  _hover={{
+                    padding: 12,
+                  }}
+                >
+                  <Flex>
+                    <Text fontSize={"32px"}>{inCart.title}</Text>
+                  </Flex>
+                  <Flex alignItems={"center"} justifyContent={"center"}>
+                    <Image src={inCart.image} />
+                  </Flex>
+                  <Flex direction={"column"} p={4} gap={4}>
+                    <Text fontSize={"24px"}>{inCart.price}₼</Text>
+                    <Text>{inCart.description}</Text>
+                  </Flex>
 
-                <Button onClick={() => handleDeleteButton(inCart.id)}>
-                  Delet it!
-                </Button>
-              </Flex>
-            ))
+                  <Button onClick={() => handleDeleteButton(inCart.id)}>
+                    Delet it!
+                  </Button>
+                </Flex>
+              ))
+          ) : (
+            data
+              ?.filter((product) =>
+                product.title
+                  .toLowerCase()
+                  .replace(" ", "")
+                  .includes(searchElement)
+              )
+              .map((inCart) => (
+                <Flex
+                  direction={"column"}
+                  p={4}
+                  gap={4}
+                  backgroundColor={"#cccbcb"}
+                  borderRadius={"md"}
+                  key={inCart.id}
+                  minW={"300px"}
+                  maxW={"600px"}
+                  minH={"550px"}
+                  transitionDuration={"700ms"}
+                  onClick={() => navigate(`/product/${inCart.id}`)}
+                  _hover={{
+                    padding: 12,
+                  }}
+                >
+                  <Flex>
+                    <Text fontSize={"32px"}>{inCart.title}</Text>
+                  </Flex>
+                  <Flex alignItems={"center"} justifyContent={"center"}>
+                    <Image src={inCart.image} />
+                  </Flex>
+                  <Flex direction={"column"} p={4} gap={4}>
+                    <Text fontSize={"24px"}>{inCart.price}₼</Text>
+                    <Text>{inCart.description}</Text>
+                  </Flex>
+
+                  <Button onClick={() => handleDeleteButton(inCart.id)}>
+                    Delet it!
+                  </Button>
+                </Flex>
+              ))
           )}
         </Flex>
         <Flex w={"100%"} justifyContent={"center"} alignItems={"center"}>

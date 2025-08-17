@@ -1,6 +1,6 @@
 import { Flex, Image, Text, Input, Button, Loader } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaMoon, FaPlus, FaShoppingCart } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
 import {
@@ -23,6 +23,8 @@ export const App = () => {
   const imgInputRef = useRef<HTMLInputElement>(null);
   const priceInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchElement, setSearchElement] = useState("");
   const navigate = useNavigate();
 
   const handleSellMenuOpener = () => {
@@ -104,10 +106,12 @@ export const App = () => {
       <header style={{ width: "100%", position: "fixed", zIndex: "1000" }}>
         <Flex
           p={4}
+          gap={4}
           alignItems={"center"}
           justifyContent={"space-between"}
           width={"100%"}
           boxShadow={"md"}
+          wrap={"wrap"}
         >
           <Flex gap={2} alignItems={"center"}>
             <Flex
@@ -123,6 +127,13 @@ export const App = () => {
           </Flex>
           <Flex>
             <Image onClick={() => navigate("/")} src={Logo} width={"150px"} />
+          </Flex>
+          <Flex
+            gap={1}
+            alignItems={"center"}
+            onChange={() => setSearchElement(searchInputRef.current!.value)}
+          >
+            <Input placeholder="Search in site..." ref={searchInputRef}></Input>
           </Flex>
           <Flex gap={4}>
             <Flex onClick={handleSellMenuOpener}>
@@ -184,6 +195,52 @@ export const App = () => {
       >
         {isFetching ? (
           <Loader />
+        ) : searchElement !== "" ? (
+          data
+            ?.filter((product) =>
+              product.title
+                .toLowerCase()
+                .replace(" ", "")
+                .includes(searchElement)
+            )
+            .map((product) => (
+              <Flex
+                direction={"column"}
+                p={4}
+                gap={4}
+                backgroundColor={"#cccbcb"}
+                borderRadius={"md"}
+                key={product.id}
+                minW={"300px"}
+                maxW={"600px"}
+                minH={"550px"}
+                onClick={() => navigate(`/product/${product.id}`)}
+                transitionDuration={"700ms"}
+                _hover={{
+                  padding: 12,
+                }}
+              >
+                <Flex>
+                  <Text fontSize={"32px"}>{product.title}</Text>
+                </Flex>
+                <Flex alignItems={"center"} justifyContent={"center"}>
+                  <Image src={product.image} />
+                </Flex>
+                <Flex direction={"column"} p={4} gap={4}>
+                  <Text fontSize={"24px"}>{product.price}₼</Text>
+                  <Text>{product.description}</Text>
+                </Flex>
+                {product.isDeletable === "true" ? (
+                  <Button onClick={() => handleDeleteButton(product.id)}>
+                    Delet it!
+                  </Button>
+                ) : (
+                  <Button onClick={() => handleAddToCartButtonClicked(product)}>
+                    Ad to cart!
+                  </Button>
+                )}
+              </Flex>
+            ))
         ) : (
           data?.map((product) => (
             <Flex
