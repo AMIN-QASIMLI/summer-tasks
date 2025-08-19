@@ -15,6 +15,7 @@ export const App = () => {
   const [latestUsers, setLatestUsers] = useState([]);
   const navigate = useNavigate();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   const toggleDarkMode = (darkMode: boolean) => {
     document.body.classList.toggle("dark-mode", darkMode);
     window.localStorage.setItem("darkMode", String(darkMode));

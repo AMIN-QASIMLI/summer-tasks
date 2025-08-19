@@ -3,17 +3,28 @@ import { useEffect, useRef, useState } from "react";
 import { FaMoon, FaPlus } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
 import Logo from "./assets/InstaMin_logo.svg";
+import { LikeButton } from "./LikeButton";
+import { WiDayThunderstorm } from "react-icons/wi";
 
 export const App = () => {
   const plusRef = useRef<HTMLDivElement>(null);
   const postMenuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
+  const [isPostMenuOpen, setIsPostMenuOpen] = useState(false);
+  const [postPreview, setPostPreview] = useState<
+    { profile: string; file: string; description: string }[]
+  >([]);
 
   const handlePlusClick = () => {
     if (postMenuRef.current) {
       postMenuRef.current.style.display =
         postMenuRef.current.style.display === "none" ? "flex" : "none";
+      if (postMenuRef.current.style.display === "flex") {
+        setIsPostMenuOpen(true);
+      }else {
+        setIsPostMenuOpen(false)
+      }
     }
   };
 
@@ -40,10 +51,38 @@ export const App = () => {
     descriptionInputRef.current!.value = "";
   };
 
+  const handleFileChange = () => {
+    const file = fileInputRef.current?.files?.[0];
+    const description =
+      descriptionInputRef.current?.value || "No description provided";
+
+    if (file && isPostMenuOpen) {
+      setPostPreview([
+        {
+          profile: "https://picsum.photos/40/40?random=1",
+          file: URL.createObjectURL(file),
+          description: description,
+        },
+      ]);
+    } else {
+      setPostPreview([
+        {
+          profile: "",
+          file: "",
+          description: "",
+        },
+      ]);
+    }
+  };
+
   useEffect(() => {
     const darkMode = window.localStorage.getItem("darkMode") === "true";
     document.body.classList.toggle("dark-mode", darkMode);
-  }, []);
+    if (!isPostMenuOpen) {
+      setPostPreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, [isPostMenuOpen]);
 
   const toggleDarkMode = (darkMode: boolean) => {
     document.body.classList.toggle("dark-mode", darkMode);
@@ -171,12 +210,18 @@ export const App = () => {
             display="none"
             bg="rgba(255, 255, 255, 0.2)"
             backdropFilter="blur(10px)"
+            alignItems={"center"}
           >
             <Text>Post Menu</Text>
-            <Input type="file" ref={fileInputRef}></Input>
+            <Input
+              type="file"
+              ref={fileInputRef}
+              onChange={() => handleFileChange()}
+            ></Input>
             <Input
               placeholder="Write a description..."
               ref={descriptionInputRef}
+              onChange={() => handleFileChange()}
             ></Input>
             <Button colorScheme="blue" mt={2} onClick={handlePostButtonClick}>
               Post
@@ -190,6 +235,45 @@ export const App = () => {
           alignItems={"center"}
           direction={"column"}
         >
+          {postPreview !== null ? (
+            postPreview.map((post, idx) => (
+              <Flex
+                key={idx}
+                direction={"column"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                boxShadow="md"
+                mb={4}
+                p={5}
+                wrap={"wrap"}
+                borderRadius={"lg"}
+                maxW={"900px"}
+                gap={4}
+              >
+                <Text>Preview:</Text>
+                <Flex alignItems={"center"} gap={2}>
+                  <Flex gap={4} boxShadow="md" borderRadius={"lg"} p={2}>
+                    <Image
+                      src={post.profile}
+                      alt="random"
+                      borderRadius={"lg"}
+                      gap={4}
+                      boxShadow="md"
+                      clipPath={"circle(50%)"}
+                    />
+                    <Text>
+                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                    </Text>
+                    <LikeButton />
+                  </Flex>
+                </Flex>
+                <Image src={post.file} alt="random" />
+                <Text>{post.description}</Text>
+              </Flex>
+            ))
+          ) : (
+            <></>
+          )}
           {sharedPosts.map((post, idx) => (
             <Flex
               key={idx}
@@ -204,18 +288,21 @@ export const App = () => {
               maxW={"900px"}
               gap={4}
             >
-              <Flex gap={4} boxShadow="md" borderRadius={"lg"} p={2}>
-                <Image
-                  src={post.profile}
-                  alt="random"
-                  borderRadius={"lg"}
-                  gap={4}
-                  boxShadow="md"
-                  clipPath={"circle(50%)"}
-                />
-                <Text>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                </Text>
+              <Flex alignItems={"center"} gap={2}>
+                <Flex gap={4} boxShadow="md" borderRadius={"lg"} p={2}>
+                  <Image
+                    src={post.profile}
+                    alt="random"
+                    borderRadius={"lg"}
+                    gap={4}
+                    boxShadow="md"
+                    clipPath={"circle(50%)"}
+                  />
+                  <Text>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  </Text>
+                  <LikeButton />
+                </Flex>
               </Flex>
               <Image src={post.file} alt="random" />
               <Text>{post.description}</Text>
@@ -235,18 +322,21 @@ export const App = () => {
               maxW={"900px"}
               gap={4}
             >
-              <Flex gap={4} boxShadow="md" borderRadius={"lg"} p={2}>
-                <Image
-                  src={post.profile}
-                  alt="random"
-                  borderRadius={"lg"}
-                  gap={4}
-                  boxShadow="md"
-                  clipPath={"circle(50%)"}
-                />
-                <Text>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                </Text>
+              <Flex alignItems={"center"} gap={2}>
+                <Flex gap={4} boxShadow="md" borderRadius={"lg"} p={2}>
+                  <Image
+                    src={post.profile}
+                    alt="random"
+                    borderRadius={"lg"}
+                    gap={4}
+                    boxShadow="md"
+                    clipPath={"circle(50%)"}
+                  />
+                  <Text>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  </Text>
+                </Flex>
+                <LikeButton />
               </Flex>
               <Image src={post.url} alt="random" />
               <Text>

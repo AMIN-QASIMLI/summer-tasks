@@ -1,22 +1,33 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { axiosBaseQuery } from "./axiosInstance";
 
-interface Post {
-  userId: number;
+interface User {
   id: number;
-  title: string;
-  body: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  password: string;
+  companyName: string;
+  mobile: string;
 }
 
+type UsersResponse = User[];
+
 export const api = createApi({
-  reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://jsonplaceholder.typicode.com",
-  }),
+  reducerPath: "userApi",
+  baseQuery: axiosBaseQuery(),
   endpoints: (builder) => ({
-    getPosts: builder.query<Post[], void>({
-      query: () => `/posts`,
+    getUser: builder.query<UsersResponse, void>({
+      query: () => ({ url: "/profile", method: "get" }),
+    }),
+    addUser: builder.mutation<UsersResponse, any>({
+      query: (user) => ({ method: "post", url: "/users", data: user }),
+    }),
+    deleteUser: builder.mutation<UsersResponse, any>({
+      query: (id) => ({ url: `/users/${id}`, method: "delete" }),
     }),
   }),
 });
 
-export const { useGetPostsQuery, useLazyGetPostsQuery } = api;
+export const { useGetUserQuery, useAddUserMutation, useDeleteUserMutation} =
+  api;

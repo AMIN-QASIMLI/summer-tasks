@@ -71,7 +71,7 @@ export const productsApi = createApi({
       query: (product) => ({
         url: "/inCarts",
         method: "post",
-        data: product, // title, price, description, image
+        data: product,
       }),
       invalidatesTags: [{ type: "Product", id: "LIST" }],
     }),
