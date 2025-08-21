@@ -18,8 +18,7 @@ export const App = () => {
   useEffect(() => {
     const darkMode = window.localStorage.getItem("darkMode") === "true";
     document.body.classList.toggle("dark-mode", darkMode);
-    console.log(data?.user);
-  }, [data]);
+  }, []);
   return (
     <Flex p={4} gap={8} direction={"column"} alignItems={"center"} justifyContent={"center"}>
       <Flex gap={4}>

@@ -1,0 +1,33 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: #f1f1f1;
+  color: #181818;
+}
+
+button {
+  background-color: #f1f1f1;
+}
+
+button:hover {
+  background-color: #cecece;
+}
+
+body.dark-mode {
+  background: #181818;
+  color: #f1f1f1;
+}
+
+body.dark-mode input,
+body.dark-mode button {
+  background: #232323;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+body.dark-mode button:hover {
+  background-color: #464545;
+}
