@@ -1,14 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchPhotos } from "./fetchPhotos";
-import {
-  Badge,
-  Button,
-  Flex,
-  Image,
-  Input,
-  Loader,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Flex, Image, Input, Loader, Text } from "@chakra-ui/react";
 import Logo from "./assets/Logo.svg";
 import { FaMoon } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
@@ -28,6 +20,7 @@ export function App() {
   const [hasMore, setHasMore] = useState(true);
   const [selected, setSelected] = useState(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pageRef = useRef(1);
   const UNSPLASH_KEY = "txppfk0bKUk0LGIlOjYPwxRUbd0VNJAATQCNkBjFef0";
 
   const perPage = 24;
@@ -46,45 +39,58 @@ export function App() {
 
   const columns = useColumns();
 
+  const loadMore = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    try {
+      const list = await fetchPhotos({ page, perPage, query });
+
+      setPhotos((prev) => [...prev, ...list]);
+      setHasMore(list.length === perPage);
+
+      setPage((prev) => prev + 1);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, query, hasMore, isLoading]);
+
   useEffect(() => {
-    if (!canFetch) return;
     const darkMode = window.localStorage.getItem("darkMode") === "true";
     document.body.classList.toggle("dark-mode", darkMode);
-    setIsLoading(true);
-    setHasMore(true);
+
+    setPhotos([]);
     setPage(1);
+    setHasMore(true);
+    setIsLoading(true);
+
     fetchPhotos({ page: 1, perPage, query })
       .then((list) => {
         setPhotos(list);
-        setIsLoading(false);
         setHasMore(list.length === perPage);
+        setPage(2);
       })
-      .catch(() => setIsLoading(false));
-  }, [query, canFetch]);
+      .finally(() => setIsLoading(false));
+  }, [query]);
 
   useEffect(() => {
-    if (!sentinelRef.current || !hasMore || isLoading) return;
+    if (!sentinelRef.current) return;
+
     const el = sentinelRef.current;
-    const io = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
-          setIsLoading(true);
-          const next = page + 1;
-          fetchPhotos({ page: next, perPage, query })
-            .then((list) => {
-              setPhotos((p) => [...p, ...list]);
-              setPage(next);
-              setHasMore(list.length === perPage);
-              setIsLoading(false);
-            })
-            .catch(() => setIsLoading(false));
+          loadMore();
         }
       },
       { rootMargin: "800px 0px" }
     );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [page, query, hasMore, isLoading]);
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   return (
     <Flex w={"100%"} h={"100%"} direction={"column"}>
@@ -139,7 +145,7 @@ export function App() {
         </Flex>
 
         <Button onClick={() => alert(`Favorit sayı: ${favCount}`)}>
-          Favoritlər <Badge>{favCount}</Badge>
+          Favorites {favCount}
         </Button>
         <Button
           className="hidden sm:inline-flex"
@@ -192,7 +198,12 @@ export function App() {
           width: "100%",
         }}
       >
-        <Flex w={"100%"} mt={"125px"} justifyContent={"center"}>
+        <Flex
+          w={"100%"}
+          mt={"125px"}
+          direction={"column"}
+          justifyContent={"center"}
+        >
           {!canFetch && (
             <Flex
               mb={4}
@@ -220,8 +231,7 @@ export function App() {
               )}
             />
           </Flex>
-          <Flex />
-          <div ref={sentinelRef}></div>
+          <div ref={sentinelRef} style={{ height: "1px", width: "100%" }}></div>
           {isLoading && <Loader />}
           {!hasMore && <Text>Last result</Text>}
         </Flex>
