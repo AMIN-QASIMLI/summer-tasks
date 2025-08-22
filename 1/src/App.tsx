@@ -48,6 +48,7 @@ export const App = () => {
       direction={"column"}
       align={"center"}
       justify={"center"}
+      grow={1}
       padding={16}
       gap={8}
     >
@@ -64,7 +65,7 @@ export const App = () => {
         padding={10}
         gap={4}
         width={"100%"}
-        height={"100vh"}
+        grow={1}
         maxWidth={400}
         border={"1px solid #ccc"}
         borderRadius={8}
